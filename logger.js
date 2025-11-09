@@ -3,6 +3,7 @@
 const pino = require('pino');
 const pretty = require('pino-pretty');
 
+// Визначаємо транспорт (pino-pretty) для красивого виводу
 const transport = (process.env.PRETTY_LOGGING === 'true')
     ? pino.transport({
         target: 'pino-pretty',

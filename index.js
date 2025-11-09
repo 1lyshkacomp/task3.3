@@ -4,7 +4,7 @@ require('dotenv').config();
 const TelegramBot = require('node-telegram-bot-api');
 const express = require('express');
 const axios = require('axios'); 
-const logger = require('./logger'); 
+const logger = require('./logger'); // <--- МОДУЛЬ ЗНАЙДЕНО!
 
 // --- 1. КОНФІГУРАЦІЯ ---
 const token = process.env.BOT_TOKEN;
@@ -12,6 +12,7 @@ const API_KEY = process.env.HOLIDAYS_API_KEY;
 const port = process.env.PORT || 8080; 
 const webhookPath = '/bot/' + token; 
 
+// Список країн та їх кодів для кнопок
 const COUNTRIES = {
     '🇺🇸 США': 'US',
     '🇬🇧 UK': 'GB',
@@ -80,13 +81,14 @@ bot.onText(/\/start/, (msg) => {
 
     const countryNames = Object.keys(COUNTRIES);
     
+    // Створення коректної клавіатури-відповіді (Reply Keyboard)
     const replyMarkup = {
         keyboard: [
-            [countryNames[0], countryNames[1], countryNames[2]],
-            [countryNames[3], countryNames[4], countryNames[5]]
-        ],
+            [countryNames[0], countryNames[1], countryNames[2]], // Ряд 1
+            [countryNames[3], countryNames[4], countryNames[5]]  // Ряд 2
+        ], 
         resize_keyboard: true, 
-        one_time_keyboard: false
+        one_time_keyboard: false // <--- КОМА ВИДАЛЕНА, ЩОБ УНИКНУТИ SYNTAX ERROR
     };
 
     bot.sendMessage(chatId, "🌍 Оберіть країну, щоб дізнатися, яке сьогодні свято:", { 
