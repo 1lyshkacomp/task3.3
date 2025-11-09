@@ -4,7 +4,7 @@ require('dotenv').config();
 const TelegramBot = require('node-telegram-bot-api');
 const express = require('express');
 const axios = require('axios'); 
-const logger = require('./logger'); // <--- МОДУЛЬ ЗНАЙДЕНО!
+// const logger = require('./logger'); <-- ВИДАЛЕНО
 
 // --- 1. КОНФІГУРАЦІЯ ---
 const token = process.env.BOT_TOKEN;
@@ -34,7 +34,7 @@ function getTodayDate() {
 
 async function getTodayHolidays(countryCode) {
     if (!API_KEY) {
-        logger.error("HOLIDAYS_API_KEY не встановлено.");
+        console.error("HOLIDAYS_API_KEY не встановлено. Перевірте Env Variables.");
         throw new Error('API Key не встановлено.');
     }
     
@@ -61,14 +61,16 @@ app.use(express.json());
 
 // Запуск сервера Express
 app.listen(port, () => {
-    logger.info('Express server is running on port %d. Ready for Webhook setup.', port);
+    // ЗАМІНЕНО logger.info НА console.log
+    console.log(`Express server is running on port ${port}. Ready for Webhook setup.`); 
 });
 
 // Обробка вхідних Webhook-запитів
 app.post(webhookPath, (req, res) => {
     bot.processUpdate(req.body);
     res.sendStatus(200); 
-    logger.info({ updateId: req.body.update_id }, "Отримано оновлення від Telegram");
+    // ЗАМІНЕНО logger.info НА console.log
+    console.log(`Отримано оновлення від Telegram: ${req.body.update_id}`);
 });
 
 
@@ -77,7 +79,8 @@ app.post(webhookPath, (req, res) => {
 // Обробка /start
 bot.onText(/\/start/, (msg) => {
     const chatId = msg.chat.id;
-    logger.info({ chatId, command: '/start' }, "Отримано команду /start. Відправляю Reply Keyboard.");
+    // ЗАМІНЕНО logger.info НА console.log
+    console.log(`Отримано команду /start від ${chatId}. Відправляю Reply Keyboard.`);
 
     const countryNames = Object.keys(COUNTRIES);
     
@@ -88,7 +91,7 @@ bot.onText(/\/start/, (msg) => {
             [countryNames[3], countryNames[4], countryNames[5]]  // Ряд 2
         ], 
         resize_keyboard: true, 
-        one_time_keyboard: false // <--- КОМА ВИДАЛЕНА, ЩОБ УНИКНУТИ SYNTAX ERROR
+        one_time_keyboard: false 
     };
 
     bot.sendMessage(chatId, "🌍 Оберіть країну, щоб дізнатися, яке сьогодні свято:", { 
@@ -106,7 +109,7 @@ bot.on('message', async (msg) => {
 
     if (countryName && !text.startsWith('/')) {
         const countryCode = COUNTRIES[countryName];
-        logger.info({ chatId, countryCode }, `Користувач обрав країну: ${countryName}. Виконую запит до API.`);
+        console.log(`Користувач обрав країну: ${countryName}. Виконую запит до API.`);
 
         try {
             bot.sendMessage(chatId, `⏳ Шукаю свята в ${countryName}...`);
@@ -125,7 +128,8 @@ bot.on('message', async (msg) => {
                 bot.sendMessage(chatId, `🧐 Сьогодні (${countryName}) немає офіційних свят.`);
             }
         } catch (error) {
-            logger.error({ chatId, error: error.message }, "Помилка при запиті до AbstractAPI");
+            // ЗАМІНЕНО logger.error НА console.error
+            console.error(`Помилка при запиті до AbstractAPI: ${error.message}`);
             bot.sendMessage(chatId, '❌ Виникла помилка під час отримання даних. Перевірте HOLIDAYS_API_KEY.');
         }
     }
