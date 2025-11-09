@@ -12,7 +12,6 @@ const API_KEY = process.env.HOLIDAYS_API_KEY;
 const port = process.env.PORT || 8080; 
 const webhookPath = '/bot/' + token; 
 
-// Список країн та їх кодів
 const COUNTRIES = {
     '🇺🇸 США': 'US',
     '🇬🇧 UK': 'GB',
@@ -34,7 +33,7 @@ function getTodayDate() {
 
 async function getTodayHolidays(countryCode) {
     if (!API_KEY) {
-        logger.error("HOLIDAYS_API_KEY не встановлено. Перевірте Env Variables.");
+        logger.error("HOLIDAYS_API_KEY не встановлено.");
         throw new Error('API Key не встановлено.');
     }
     
@@ -81,7 +80,6 @@ bot.onText(/\/start/, (msg) => {
 
     const countryNames = Object.keys(COUNTRIES);
     
-    // Створення клавіатури-відповіді (Reply Keyboard) 
     const replyMarkup = {
         keyboard: [
             [countryNames[0], countryNames[1], countryNames[2]],
@@ -97,7 +95,7 @@ bot.onText(/\/start/, (msg) => {
 });
 
 
-// Обробка натискання кнопки (всіх текстових повідомлень)
+// Обробка натискання кнопки
 bot.on('message', async (msg) => {
     const chatId = msg.chat.id;
     const text = msg.text;
@@ -126,7 +124,7 @@ bot.on('message', async (msg) => {
             }
         } catch (error) {
             logger.error({ chatId, error: error.message }, "Помилка при запиті до AbstractAPI");
-            bot.sendMessage(chatId, '❌ Виникла помилка під час отримання даних. Перевірте HOLIDAYS_API_KEY або логі.');
+            bot.sendMessage(chatId, '❌ Виникла помилка під час отримання даних. Перевірте HOLIDAYS_API_KEY.');
         }
     }
 });

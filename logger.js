@@ -3,8 +3,6 @@
 const pino = require('pino');
 const pretty = require('pino-pretty');
 
-// Визначаємо транспорт (pino-pretty) для красивого виводу в терміналі, 
-// якщо встановлена змінна оточення PRETTY_LOGGING=true
 const transport = (process.env.PRETTY_LOGGING === 'true')
     ? pino.transport({
         target: 'pino-pretty',
@@ -16,10 +14,8 @@ const transport = (process.env.PRETTY_LOGGING === 'true')
     })
     : undefined;
 
-// Ініціалізуємо логер. Якщо transport визначений, лог буде красивим, 
-// інакше це буде чистий JSON, готовий до Cloud Logging.
 const logger = pino({
-    level: process.env.LOG_LEVEL || 'info', // Рівень логування: info, debug, error, ...
+    level: process.env.LOG_LEVEL || 'info', 
 }, transport);
 
 module.exports = logger;
